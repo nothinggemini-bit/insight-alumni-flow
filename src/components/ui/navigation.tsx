@@ -1,9 +1,25 @@
-import { ArrowLeft, ArrowRight, Home } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home, User } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { ProfileView } from "@/components/profile/profile-view";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./button";
 
 export const Navigation = () => {
   const navigate = useNavigate();
+  
+  // Get current user for profile view
+  const getCurrentUser = () => {
+    const user = localStorage.getItem('alumniConnect_currentUser');
+    return user ? JSON.parse(user) : null;
+  };
+
+  const handleUpdateAvatar = (avatar: string) => {
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      const updatedUser = { ...currentUser, avatar };
+      localStorage.setItem('alumniConnect_currentUser', JSON.stringify(updatedUser));
+    }
+  };
 
   const goBack = () => {
     if (window.history.length > 1) {
@@ -21,8 +37,32 @@ export const Navigation = () => {
     navigate('/');
   };
 
+  const currentUser = getCurrentUser();
+
   return (
     <div className="flex items-center gap-2 p-3 bg-background border-b border-border">
+      {/* Profile View Button - Only show if user is logged in */}
+      {currentUser && (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <User className="h-4 w-4" />
+              Profile
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <ProfileView 
+              user={currentUser} 
+              onUpdateAvatar={handleUpdateAvatar}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+      
       <Button
         variant="outline"
         size="sm"

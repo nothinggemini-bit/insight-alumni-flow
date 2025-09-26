@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Navigation } from "@/components/ui/navigation";
 import { PostCard } from "@/components/posts/post-card";
+import { CommentSection } from "@/components/posts/comment-section";
 import { Globe, Users, MessageCircle, UserPlus, Plus, Search, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -48,6 +49,8 @@ export const Dashboard = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState({ title: '', body: '' });
+  const [openComments, setOpenComments] = useState<string | null>(null);
+  const [comments, setComments] = useState<{[postId: string]: any[]}>({});
   const [activeTab, setActiveTab] = useState('global');
 
   useEffect(() => {
@@ -206,29 +209,101 @@ export const Dashboard = () => {
   };
 
   const handleVote = (postId: string, voteType: 'up' | 'down') => {
-    // Mock voting - in real app this would update backend
-    console.log(`Voted ${voteType} on post ${postId}`);
+    if (!currentUser) return;
+    
+    const updatedPosts = posts.map(post => {
+      if (post.id === postId) {
+        const currentVote = post.votes.userVote;
+        let newUpvotes = post.votes.upvotes;
+        let newDownvotes = post.votes.downvotes;
+        let newUserVote: 'up' | 'down' | null = voteType;
+        
+        // Remove previous vote if exists
+        if (currentVote === 'up') newUpvotes--;
+        if (currentVote === 'down') newDownvotes--;
+        
+        // Apply new vote if different from current
+        if (currentVote !== voteType) {
+          if (voteType === 'up') newUpvotes++;
+          if (voteType === 'down') newDownvotes++;
+        } else {
+          newUserVote = null; // Toggle off if same vote
+        }
+        
+        return {
+          ...post,
+          votes: {
+            upvotes: newUpvotes,
+            downvotes: newDownvotes,
+            userVote: newUserVote
+          }
+        };
+      }
+      return post;
+    });
+    
+    setPosts(updatedPosts);
+    localStorage.setItem('alumniConnect_posts', JSON.stringify(updatedPosts));
   };
 
   const handleComment = (postId: string) => {
-    // Mock comment - in real app this would open comment interface
-    console.log(`Opening comments for post ${postId}`);
+    setOpenComments(openComments === postId ? null : postId);
+  };
+
+  const handleAddComment = (postId: string, content: string) => {
+    if (!currentUser) return;
+
+    const newComment = {
+      id: Date.now().toString(),
+      authorId: currentUser.id,
+      authorName: currentUser.fullName,
+      authorRole: currentUser.role,
+      content,
+      createdAt: new Date().toISOString()
+    };
+
+    // Update comments
+    const updatedComments = {
+      ...comments,
+      [postId]: [...(comments[postId] || []), newComment]
+    };
+    setComments(updatedComments);
+
+    // Update post comment count
+    const updatedPosts = posts.map(post => 
+      post.id === postId 
+        ? { ...post, comments: post.comments + 1 }
+        : post
+    );
+    setPosts(updatedPosts);
+    localStorage.setItem('alumniConnect_posts', JSON.stringify(updatedPosts));
   };
 
   const getFilteredPosts = () => {
+    let filteredPosts;
     switch (activeTab) {
       case 'global':
-        return posts.filter(post => post.type === 'global');
+        filteredPosts = posts.filter(post => post.type === 'global');
+        break;
       case 'branch':
-        return posts.filter(post => 
+        filteredPosts = posts.filter(post => 
           post.type === 'branch' || 
           (post.branch === currentUser?.branch)
         );
+        break;
       case 'doubts':
-        return posts.filter(post => post.type === 'doubt');
+        filteredPosts = posts.filter(post => post.type === 'doubt');
+        break;
       default:
-        return posts;
+        filteredPosts = posts;
     }
+    
+    // Sort by interaction score (upvotes + comments) - higher interaction = higher rank
+    return filteredPosts.sort((a, b) => {
+      const scoreA = (a.votes.upvotes - a.votes.downvotes) + (a.comments * 2);
+      const scoreB = (b.votes.upvotes - b.votes.downvotes) + (b.comments * 2);
+      return scoreB - scoreA;
+    });
   };
 
   const getSuggestedAlumni = () => {
@@ -342,23 +417,39 @@ export const Dashboard = () => {
                     if (!author) return null;
 
                     return (
-                      <PostCard
-                        key={post.id}
-                        id={post.id}
-                        author={{
-                          name: author.fullName,
-                          role: author.role,
-                          branch: author.branch,
-                          yearOfPassing: author.yearOfPassing,
-                          company: author.companyName
-                        }}
-                        content={post.content}
-                        votes={post.votes}
-                        comments={post.comments}
-                        createdAt={post.createdAt}
-                        onVote={handleVote}
-                        onComment={handleComment}
-                      />
+                      <div key={post.id}>
+                        <PostCard
+                          id={post.id}
+                          author={{
+                            name: author.fullName,
+                            role: author.role,
+                            branch: author.branch,
+                            yearOfPassing: author.yearOfPassing,
+                            company: author.companyName
+                          }}
+                          content={post.content}
+                          votes={post.votes}
+                          comments={post.comments}
+                          createdAt={post.createdAt}
+                          onVote={handleVote}
+                          onComment={handleComment}
+                        />
+                        
+                        {/* Comment Section */}
+                        {openComments === post.id && (
+                          <CommentSection
+                            postId={post.id}
+                            comments={comments[post.id] || []}
+                            onAddComment={handleAddComment}
+                            onClose={() => setOpenComments(null)}
+                            currentUser={currentUser ? {
+                              id: currentUser.id,
+                              name: currentUser.fullName,
+                              role: currentUser.role
+                            } : null}
+                          />
+                        )}
+                      </div>
                     );
                   })}
                 </div>

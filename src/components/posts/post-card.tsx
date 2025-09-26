@@ -3,7 +3,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ChevronUp, ChevronDown, MessageCircle, Share, MoreVertical } from "lucide-react";
+import { ChevronUp, ChevronDown, MessageCircle, Share, MoreVertical, ExternalLink } from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from "date-fns";
 
 interface PostCardProps {
@@ -74,6 +80,60 @@ export const PostCard = ({
     } catch {
       return 'Recently';
     }
+  };
+
+  const ShareButton = ({ postId, postTitle, postContent }: { postId: string; postTitle?: string; postContent: string }) => {
+    const shareText = `${postTitle ? postTitle + ' - ' : ''}${postContent.slice(0, 100)}${postContent.length > 100 ? '...' : ''}`;
+    const shareUrl = `${window.location.origin}/dashboard`; // In a real app, this would be a direct post URL
+    
+    const handleShare = (platform: 'whatsapp' | 'sms' | 'twitter') => {
+      let url = '';
+      const encodedText = encodeURIComponent(shareText);
+      const encodedUrl = encodeURIComponent(shareUrl);
+      
+      switch (platform) {
+        case 'whatsapp':
+          url = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
+          break;
+        case 'sms':
+          url = `sms:?body=${encodedText}%20${encodedUrl}`;
+          break;
+        case 'twitter':
+          url = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+          break;
+      }
+      
+      window.open(url, '_blank');
+    };
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <Share className="h-4 w-4" />
+            <span>Share</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
+            <ExternalLink className="h-4 w-4 mr-2" />
+            WhatsApp
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare('sms')}>
+            <ExternalLink className="h-4 w-4 mr-2" />
+            SMS
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleShare('twitter')}>
+            <ExternalLink className="h-4 w-4 mr-2" />
+            Twitter (X)
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
   };
 
   return (
@@ -190,14 +250,7 @@ export const PostCard = ({
             </Button>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-          >
-            <Share className="h-4 w-4" />
-            <span>Share</span>
-          </Button>
+          <ShareButton postId={id} postTitle={content.title} postContent={content.body} />
         </div>
       </CardContent>
     </Card>

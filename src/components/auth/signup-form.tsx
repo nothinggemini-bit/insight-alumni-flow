@@ -12,7 +12,9 @@ import { Users, GraduationCap } from "lucide-react";
 interface SignupFormData {
   role: 'student' | 'alumni' | '';
   fullName: string;
+  username: string;
   email: string;
+  password: string;
   branch: string;
   yearOfPassing?: string;
   placementDone?: boolean;
@@ -25,7 +27,9 @@ export const SignupForm = () => {
   const [formData, setFormData] = useState<SignupFormData>({
     role: '',
     fullName: '',
+    username: '',
     email: '',
+    password: '',
     branch: '',
   });
 
@@ -44,10 +48,23 @@ export const SignupForm = () => {
     e.preventDefault();
     
     // Validation
-    if (!formData.role || !formData.fullName || !formData.email || !formData.branch) {
+    if (!formData.role || !formData.fullName || !formData.username || !formData.email || !formData.password || !formData.branch) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check for unique username
+    const existingUsers = JSON.parse(localStorage.getItem('alumniConnect_users') || '[]');
+    const usernameExists = existingUsers.some((user: any) => user.username === formData.username);
+    
+    if (usernameExists) {
+      toast({
+        title: "Username Taken",
+        description: "This username is already in use. Please choose another one.",
         variant: "destructive"
       });
       return;
@@ -67,7 +84,13 @@ export const SignupForm = () => {
     const newUser = {
       id: Date.now().toString(),
       ...formData,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      stats: {
+        posts: 0,
+        votes: 0,
+        comments: 0,
+        messages: 0
+      }
     };
     
     users.push(newUser);
@@ -91,10 +114,10 @@ export const SignupForm = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md card-elevated">
+      <Card className="w-full max-w-lg card-elevated">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-primary">Join Alumni Connect</CardTitle>
-          <CardDescription>Connect with your college network</CardDescription>
+          <CardTitle className="text-2xl text-primary">Create Account</CardTitle>
+          <CardDescription>Join the Alumni Connect community</CardDescription>
         </CardHeader>
         
         <CardContent>
@@ -137,13 +160,36 @@ export const SignupForm = () => {
               </div>
 
               <div>
-                <Label htmlFor="email">Gmail *</Label>
+                <Label htmlFor="username">Username *</Label>
+                <Input
+                  id="username"
+                  value={formData.username}
+                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  placeholder="Choose a unique username"
+                  className="input-professional"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="your.email@gmail.com"
+                  placeholder="your.email@example.com"
+                  className="input-professional"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="password">Password *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  placeholder="Create a secure password"
                   className="input-professional"
                 />
               </div>
