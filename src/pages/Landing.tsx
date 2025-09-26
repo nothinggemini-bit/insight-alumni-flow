@@ -5,108 +5,84 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Navigation } from "@/components/ui/navigation";
 import { Users, MessageCircle, TrendingUp, GraduationCap, Building2, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
 export const Landing = () => {
   const navigate = useNavigate();
 
   // Mock data for featured content
-  const featuredAlumni = [
-    {
-      id: '1',
-      name: 'Sarah Johnson',
-      company: 'Google',
-      role: 'Software Engineer',
-      branch: 'Computer Science',
-      year: '2019',
-      rating: 4.9,
-      location: 'Mountain View, CA'
-    },
-    {
-      id: '2', 
-      name: 'Raj Patel',
-      company: 'Microsoft',
-      role: 'Product Manager',
-      branch: 'Electronics & Communication',
-      year: '2018',
-      rating: 4.8,
-      location: 'Seattle, WA'
-    },
-    {
-      id: '3',
-      name: 'Priya Sharma',
-      company: 'Tesla',
-      role: 'Mechanical Engineer',
-      branch: 'Mechanical Engineering',
-      year: '2020',
-      rating: 4.9,
-      location: 'Austin, TX'
-    }
-  ];
-
-  const topPosts = [
-    {
-      id: '1',
-      title: 'Tips for Cracking Technical Interviews at FAANG',
-      author: 'Sarah Johnson',
-      branch: 'Computer Science',
-      upvotes: 156,
-      comments: 23,
-      timeAgo: '2 days ago'
-    },
-    {
-      id: '2',
-      title: 'How I Transitioned from ECE to Product Management',
-      author: 'Raj Patel',
-      branch: 'Electronics & Communication', 
-      upvotes: 134,
-      comments: 18,
-      timeAgo: '3 days ago'
-    },
-    {
-      id: '3',
-      title: 'Remote Work Culture at Tesla - My Experience',
-      author: 'Priya Sharma',
-      branch: 'Mechanical Engineering',
-      upvotes: 98,
-      comments: 15,
-      timeAgo: '1 week ago'
-    }
-  ];
-
+  const featuredAlumni = [{
+    id: '1',
+    name: 'Sarah Johnson',
+    company: 'Google',
+    role: 'Software Engineer',
+    branch: 'Computer Science',
+    year: '2019',
+    rating: 4.9,
+    location: 'Mountain View, CA'
+  }, {
+    id: '2',
+    name: 'Raj Patel',
+    company: 'Microsoft',
+    role: 'Product Manager',
+    branch: 'Electronics & Communication',
+    year: '2018',
+    rating: 4.8,
+    location: 'Seattle, WA'
+  }, {
+    id: '3',
+    name: 'Priya Sharma',
+    company: 'Tesla',
+    role: 'Mechanical Engineer',
+    branch: 'Mechanical Engineering',
+    year: '2020',
+    rating: 4.9,
+    location: 'Austin, TX'
+  }];
+  const topPosts = [{
+    id: '1',
+    title: 'Tips for Cracking Technical Interviews at FAANG',
+    author: 'Sarah Johnson',
+    branch: 'Computer Science',
+    upvotes: 156,
+    comments: 23,
+    timeAgo: '2 days ago'
+  }, {
+    id: '2',
+    title: 'How I Transitioned from ECE to Product Management',
+    author: 'Raj Patel',
+    branch: 'Electronics & Communication',
+    upvotes: 134,
+    comments: 18,
+    timeAgo: '3 days ago'
+  }, {
+    id: '3',
+    title: 'Remote Work Culture at Tesla - My Experience',
+    author: 'Priya Sharma',
+    branch: 'Mechanical Engineering',
+    upvotes: 98,
+    comments: 15,
+    timeAgo: '1 week ago'
+  }];
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation />
       
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary via-primary-hover to-accent text-white py-16 px-4">
         <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-            Connect. Learn. Grow.
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight text-zinc-50">Connect.  Learn.  Grow. </h1>
           <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-2xl mx-auto">
             Bridge the gap between students and alumni. Share experiences, get guidance, and build your professional network.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg"
-              className="bg-white text-primary hover:bg-white/90 font-semibold px-8"
-              onClick={() => navigate('/signup')}
-            >
+            <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold px-8" onClick={() => navigate('/signup')}>
               <Users className="h-5 w-5 mr-2" />
               Join Alumni Connect
             </Button>
             
-            <Button 
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary font-semibold px-8"
-              onClick={() => navigate('/login')}
-            >
+            <Button size="lg" variant="outline" onClick={() => navigate('/login')} className="border-white hover:bg-white px-8 text-slate-950 font-semibold text-sm">
               Sign in with Google
             </Button>
           </div>
@@ -129,8 +105,7 @@ export const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredAlumni.map((alumni) => (
-              <Card key={alumni.id} className="card-elevated hover:shadow-lg transition-all cursor-pointer">
+            {featuredAlumni.map(alumni => <Card key={alumni.id} className="card-elevated hover:shadow-lg transition-all cursor-pointer">
                 <CardHeader className="pb-3">
                   <div className="flex items-start gap-3">
                     <Avatar className="h-12 w-12">
@@ -169,16 +144,11 @@ export const Landing = () => {
                     </span>
                   </div>
                   
-                  <Button 
-                    className="w-full mt-3 btn-accent" 
-                    size="sm"
-                    onClick={() => navigate('/dashboard')}
-                  >
+                  <Button className="w-full mt-3 btn-accent" size="sm" onClick={() => navigate('/dashboard')}>
                     Connect
                   </Button>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </section>
 
@@ -197,8 +167,7 @@ export const Landing = () => {
           </div>
 
           <div className="space-y-4">
-            {topPosts.map((post) => (
-              <Card key={post.id} className="card-elevated hover:shadow-lg transition-all cursor-pointer">
+            {topPosts.map(post => <Card key={post.id} className="card-elevated hover:shadow-lg transition-all cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -230,8 +199,7 @@ export const Landing = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </section>
 
@@ -245,25 +213,15 @@ export const Landing = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="btn-primary"
-              onClick={() => navigate('/signup')}
-            >
+            <Button size="lg" className="btn-primary" onClick={() => navigate('/signup')}>
               Get Started Today
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              onClick={() => navigate('/dashboard')}
-            >
+            <Button size="lg" variant="outline" onClick={() => navigate('/dashboard')}>
               Explore as Guest
             </Button>
           </div>
         </section>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
