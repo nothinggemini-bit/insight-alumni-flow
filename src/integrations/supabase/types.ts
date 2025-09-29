@@ -14,7 +14,188 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          parent_comment_id: string | null
+          post_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          parent_comment_id?: string | null
+          post_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          parent_comment_id?: string | null
+          post_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      connections: {
+        Row: {
+          created_at: string
+          id: string
+          recipient_id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recipient_id: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recipient_id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          author_id: string
+          comment_count: number
+          content: string
+          created_at: string
+          downvotes: number
+          id: string
+          post_type: string
+          title: string
+          updated_at: string
+          upvotes: number
+        }
+        Insert: {
+          author_id: string
+          comment_count?: number
+          content: string
+          created_at?: string
+          downvotes?: number
+          id?: string
+          post_type?: string
+          title: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Update: {
+          author_id?: string
+          comment_count?: number
+          content?: string
+          created_at?: string
+          downvotes?: number
+          id?: string
+          post_type?: string
+          title?: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          aura_score: number
+          avatar: string | null
+          branch: string | null
+          college: string
+          company_name: string | null
+          created_at: string
+          display_name: string
+          email: string
+          id: string
+          role: string
+          role_description: string | null
+          updated_at: string
+          user_id: string
+          username_last_changed: string | null
+          year_of_passing: number | null
+        }
+        Insert: {
+          aura_score?: number
+          avatar?: string | null
+          branch?: string | null
+          college: string
+          company_name?: string | null
+          created_at?: string
+          display_name: string
+          email: string
+          id?: string
+          role: string
+          role_description?: string | null
+          updated_at?: string
+          user_id: string
+          username_last_changed?: string | null
+          year_of_passing?: number | null
+        }
+        Update: {
+          aura_score?: number
+          avatar?: string | null
+          branch?: string | null
+          college?: string
+          company_name?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          id?: string
+          role?: string
+          role_description?: string | null
+          updated_at?: string
+          user_id?: string
+          username_last_changed?: string | null
+          year_of_passing?: number | null
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
